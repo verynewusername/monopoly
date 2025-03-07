@@ -10,11 +10,13 @@ class Property:
         self.is_mortgaged = False
         self.houses = 0
 
-    def calculate_rent(self, dice_roll, has_both_utilities):
+    def calculate_rent(self, dice_roll, has_both_utilities, number_of_stations_owned):
         if self.is_mortgaged:
             return 0
         elif self.name in ["Electric Company", "Water Works"]:
             return 4 * dice_roll if has_both_utilities else 10 * dice_roll
+        elif self.name in ["Kings Cross Station", "Marylebone Station", "Fenchurch St Station", "Liverpool Street Station"]:
+            return 25 * number_of_stations_owned
         elif self.houses == 0:
             return self.rents[0]
         elif 1 <= self.houses <= 5:

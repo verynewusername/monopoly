@@ -40,10 +40,17 @@ class Player:
     def move(self, steps):
         self.piece.position = (self.piece.position + steps) % NUM_SQUARES
 
+    def get_number_of_stations_owned(self):
+        # 5, 15, 25, 35
+        for property in self.properties:
+            if property.name in ["Kings Cross Station", "Marylebone Station", "Fenchurch St Station", "Liverpool Street Station"]:
+                return self.properties.count(property)
+        return 0
+
     def calculate_rent(self, property_name, dice_roll):
         for property in self.properties:
             if property.name == property_name:
-                return property.calculate_rent(dice_roll, self.has_both_utilities())
+                return property.calculate_rent(dice_roll, self.has_both_utilities(), self.get_number_of_stations_owned())
         raise ValueError(f"{self.name} does not own {property_name}.")
 
     def get_position(self):
@@ -66,7 +73,7 @@ class Player:
     def has_properties(self) -> bool:
         return len(self.properties) > 0
 
-    def remove_all_properties(self) -> []:
+    def remove_all_properties(self):
         properties = self.properties
         self.properties = []
         return properties

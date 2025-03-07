@@ -16,11 +16,20 @@ PROPERTY_NAMES = [
     "Liverpool Street Station", "Park Lane", "Mayfair"
 ]
 
+'''
+The following cards Depend on owning themselves
+Kings Cross Station
+Marylebone Station
+Fenchurch St Station
+Liverpool Street Station
+'''
+
+
 # Property Prices, Rents, and Mortgage Values
 PROPERTY_DATA = {
     "Old Kent Road": {"price": 60, "rent": [2, 10, 30, 90, 160, 250], "mortgage": 30},
     "Whitechapel Road": {"price": 60, "rent": [4, 20, 60, 180, 320, 450], "mortgage": 30},
-    "Kings Cross Station": {"price": 200, "rent": [25, 50, 100, 200], "mortgage": 100},
+    "Kings Cross Station": {"price": 200, "rent": [], "mortgage": 100},
     "The Angel Islington": {"price": 100, "rent": [6, 30, 90, 270, 400, 550], "mortgage": 50},
     "Euston Road": {"price": 100, "rent": [6, 30, 90, 270, 400, 550], "mortgage": 50},
     "Pentonville Road": {"price": 120, "rent": [8, 40, 100, 300, 450, 600], "mortgage": 60},
@@ -28,14 +37,14 @@ PROPERTY_DATA = {
     "Electric Company": {"price": 150, "rent": [], "mortgage": 75},  # Rent depends on dice roll
     "Whitehall": {"price": 140, "rent": [10, 50, 150, 450, 625, 750], "mortgage": 70},
     "Northumberland Avenue": {"price": 160, "rent": [12, 60, 180, 500, 700, 900], "mortgage": 80},
-    "Marylebone Station": {"price": 200, "rent": [25, 50, 100, 200], "mortgage": 100},
+    "Marylebone Station": {"price": 200, "rent": [], "mortgage": 100},
     "Bow Street": {"price": 180, "rent": [14, 70, 200, 550, 750, 950], "mortgage": 90},
     "Marlborough Street": {"price": 180, "rent": [14, 70, 200, 550, 750, 950], "mortgage": 90},
     "Vine Street": {"price": 200, "rent": [16, 80, 220, 600, 800, 1000], "mortgage": 100},
     "The Strand": {"price": 220, "rent": [18, 90, 250, 700, 875, 1050], "mortgage": 110},
     "Fleet Street": {"price": 220, "rent": [18, 90, 250, 700, 875, 1050], "mortgage": 110},
     "Trafalgar Square": {"price": 240, "rent": [20, 100, 300, 750, 925, 1100], "mortgage": 120},
-    "Fenchurch St Station": {"price": 200, "rent": [25, 50, 100, 200], "mortgage": 100},
+    "Fenchurch St Station": {"price": 200, "rent": [], "mortgage": 100},
     "Leicester Square": {"price": 260, "rent": [22, 110, 330, 800, 975, 1150], "mortgage": 130},
     "Coventry Street": {"price": 260, "rent": [22, 110, 330, 800, 975, 1150], "mortgage": 130},
     "Water Works": {"price": 150, "rent": [], "mortgage": 75},  # Rent depends on dice roll
@@ -43,7 +52,7 @@ PROPERTY_DATA = {
     "Regent Street": {"price": 300, "rent": [26, 130, 390, 900, 1100, 1275], "mortgage": 150},
     "Oxford Street": {"price": 300, "rent": [26, 130, 390, 900, 1100, 1275], "mortgage": 150},
     "Bond Street": {"price": 320, "rent": [28, 150, 450, 1000, 1200, 1400], "mortgage": 160},
-    "Liverpool Street Station": {"price": 200, "rent": [25, 50, 100, 200], "mortgage": 100},
+    "Liverpool Street Station": {"price": 200, "rent": [], "mortgage": 100},
     "Park Lane": {"price": 350, "rent": [35, 175, 500, 1100, 1300, 1500], "mortgage": 175},
     "Mayfair": {"price": 400, "rent": [50, 200, 600, 1400, 1700, 2000], "mortgage": 200}
 }
@@ -102,3 +111,5 @@ MONOPOLY_PIECES = [
     "Thimble",
     "Penguin"
 ]
+
+SEED = 42

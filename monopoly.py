@@ -1,9 +1,10 @@
-import signal
-import sys
-from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES
+from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED
 from player import Player
 from bank import Bank
 import random
+
+# Set Seed
+# random.seed(SEED)
 
 class Game:
     def __init__(self, players):
@@ -71,7 +72,7 @@ class Game:
         position = player.get_position()
         # Check if the player passed go
         if position < self.dice1 + self.dice2:
-            player.money += 10 # ! CHECK HERE - temporarily 10
+            player.money += 50 # ! CHECK HERE - temporarily 10
             print(f"{player.name} passed GO and collected $200!")
 
         if position in CHANCE_POSITIONS:
