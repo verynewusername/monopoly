@@ -25,7 +25,7 @@ class Player:
         self.bankrupt = False
         self.logic = logic
         self.type = "BOT"
-        assert logic in ["DEFAULT", "NOSPEND"]
+        assert logic in ["DEFAULT", "NOSPEND", "TACTICAL"]
         self.get_out_of_jail_free = 0
     
     def has_both_utilities(self) -> bool:
@@ -104,7 +104,7 @@ class Player:
         return self.piece.position
     
     def wants_to_buy_property(self, property_name,property_price) -> bool:
-        if self.logic == "DEFAULT":
+        if self.logic == "DEFAULT" or self.logic == "TACTICAL":
             if self.money >= property_price:
                 return True
             else:
@@ -257,6 +257,28 @@ class Player:
         # Check if the player owns all the properties of the color group
         if not self.check_if_all_properties_of_color_group_are_owned(color_group):
             return False
+
+        names_of_same_color_properties = COLOR_GROUPS[color_group]
+        # Check if the player has all the properties of the color group
+        for name in names_of_same_color_properties:
+            if not self.has_the_property(name):
+                return False
+        
+        number_of_houses_at_property_name = None
+        for property in self.properties:
+            if property.name == property_name:
+                number_of_houses_at_property_name = property.houses
+                break
+        if number_of_houses_at_property_name is None:
+            raise ValueError(f"{self.name} does not own {property_name}.")
+        
+        # Check if the other houses in the same color have the same number of houses or + 1
+        for name in names_of_same_color_properties:
+            for property in self.properties:
+                if property.name == name:
+                    if property.houses != number_of_houses_at_property_name and property.houses != number_of_houses_at_property_name + 1:
+                        return False
+
         for property in self.properties:
             if property.name == property_name:
                 if property.houses < 5:
@@ -284,14 +306,21 @@ class Player:
             if self.get_out_of_jail_free > 0:
                 self.get_out_of_jail_free -= 1
                 self.release_from_jail()
+        elif self.logic == "TACTICAL":
+            return # Do not get out of jail
         else:
             raise ValueError("Invalid logic type.")
 
     def after_turn_decision(self):
         # DECIDE if you want to build houses or sell them
 
-        if self.logic == "DEFAULT":
+        if self.logic == "DEFAULT" or self.logic == "TACTICAL":
             if self.money >= SAFE_KEEP_MONEY_THRESHOLD:
+                # Unmortgage properties if possible
+                for property in self.properties:
+                    if property.is_mortgaged:
+                        self.unmortgage_property(property.name)
+
                 print("Checking if I can build a house.")
                 # Check if there is a property that can be improved
                 for property in self.properties:
@@ -304,6 +333,5 @@ class Player:
                         # print(f"{self.name} has {len(self.properties)} properties.")
         elif self.logic == "NOSPEND":
             pass
-
         else:
             raise ValueError("Invalid logic type.")
