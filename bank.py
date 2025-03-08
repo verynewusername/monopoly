@@ -21,6 +21,12 @@ class Bank:
         # print(f"Community chest cards: {self.community_chest_cards}")
         # print(f"Unowned properties: {self.unowned_properties}")
 
+    def reset(self):
+        self.tax_accumulated = 0
+        self.unowned_properties = [Property(name) for name in PROPERTY_NAMES]
+        random.shuffle(self.chance_cards)
+        random.shuffle(self.community_chest_cards)
+
     def collected_taxes(self, amount):
         self.tax_accumulated += amount
 

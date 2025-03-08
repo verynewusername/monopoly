@@ -145,8 +145,6 @@ MONOPOLY_PIECES = [
     "Penguin"
 ]
 
-SEED = 42
-
 # ====================== LOGIC CONSTANTS ====================== #
 
 # DEFAULT LOGIC CONSTANTS

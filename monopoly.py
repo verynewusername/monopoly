@@ -1,11 +1,10 @@
-from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED, EXTRA_GO_MONEY, GO_MONEY
+from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, EXTRA_GO_MONEY, GO_MONEY
 from player import Player
 from bank import Bank
 import random
 
 class Game:
-
-    def __init__(self, seed=None):
+    def __init__(self, seed=None, analysis_flag=False):
         self.players = None
         self.bank = None
         self.current_player_index = 0
@@ -14,8 +13,19 @@ class Game:
         self.double_count = 0
         self.print_flag = False
         self.seed = seed
+        self.analysis_flag = analysis_flag
 
         self.initComplete = False
+
+    def reset(self):
+        for player in self.players:
+            player.reset()
+        self.bank.reset()
+        self.__init__(self.seed, self.analysis_flag)
+        self.current_player_index = 0
+        self.dice1 = 0
+        self.dice2 = 0
+        self.double_count = 0
 
     def load_players_npl(self, players, print_flag=False, analysis_flag=False):
         self.players = []
@@ -32,9 +42,9 @@ class Game:
 
         self.initComplete = True
 
-    def load_from_json(self, game_data):
+    def load_from_json(self, game_data) -> bool:
         if not self.validate_game_data(game_data):
-            return
+            return False
         
         self.bank = Bank(self.seed)  # Create the bank
         all_properties = self.bank.get_property_deck()
@@ -43,7 +53,7 @@ class Game:
         self.players = []
         for player_data in game_data["players"]:
             # Remove the 'properties' key from player_data for loading
-            properties_data = player_data.pop("properties", [])
+            properties_data = player_data.get("properties", [])
             
             player = Player(print_flag=self.print_flag)  # Create a new player
             player.load_from_json(player_data)  # Pass the rest of player_data
@@ -93,6 +103,8 @@ class Game:
         #     player.print_information()
 
         self.initComplete = True
+
+        return True
 
 
     def validate_game_data(self,game_data):
@@ -439,3 +451,9 @@ class Game:
             if self.print_flag:
                 print("-" * 40)
 
+    def who_won(self) -> str | None:
+        active_players = [player for player in self.players if not player.bankrupt]
+        if len(active_players) == 1:
+            print(f"{active_players[0].name} wins the game!")
+            return active_players[0]
+        return None

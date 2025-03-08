@@ -17,6 +17,16 @@ class Player:
         self.type = "BOT"
         self.print_flag = print_flag
 
+    def reset(self):
+        self.money = START_MONEY
+        self.properties.clear()  # Clear the list it
+        self.properties = []
+        self.piece.reset()
+        self.piece = None
+        self.in_jail = False
+        self.jail_turns = 0
+        self.bankrupt = False
+
     def basic_initialize(self, name, pieceName, logic, print_flag):
         self.name = name
         self.piece = Piece(pieceName)

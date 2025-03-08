@@ -22,3 +22,8 @@ class Piece:
     def move_to(self, position):
         self.position = position
         print(f"{self.name} moved to position {position}.")
+
+    @classmethod
+    def reset(cls):
+        """Deletes all stored instances and allows recreation."""
+        cls._instances.clear()

@@ -1,3 +1,4 @@
+from analyzer import MonopolyAnalyzer
 from monopoly import Game
 import sys
 import json
@@ -49,15 +50,22 @@ def main():
             with open(json_name, "r") as f:
                 game_data = json.load(f)
 
-        game = Game(seed)
+        if not analysis_flag:
 
-        if demo:
-            game.load_players_npl([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]], print_flag, analysis_flag)
+            game = Game(seed)
+
+            if demo:
+                game.load_players_npl([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]], print_flag, analysis_flag)
+            else:
+                assert game_data is not None, "Please provide a JSON file with the -f flag."
+                game.load_from_json(game_data)
+
+            game.play_game()
+
         else:
-            assert game_data is not None, "Please provide a JSON file with the -f flag."
-            game.load_from_json(game_data)
+            analyzer = MonopolyAnalyzer(game_data, seed)
+            analyzer.analyze()
 
-        game.play_game()
     except ValueError as e:
         print(e)
     except KeyboardInterrupt:
