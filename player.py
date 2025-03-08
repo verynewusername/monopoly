@@ -1,4 +1,4 @@
-from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD
+from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD, PRINT_FLAG
 from piece import Piece
 import copy
 
@@ -38,7 +38,8 @@ class Player:
                 assert self.money >= 0
                 return True
             else:
-                print(f"{self.name} is bankrupt!")
+                if PRINT_FLAG:
+                    print(f"{self.name} is bankrupt!")
                 self.bankrupt = True
                 return False
         return True
@@ -210,7 +211,8 @@ class Player:
                 if property.name == property_name:
                     self.deduct_money(price)
                     property.build_a_house()
-                    print(f"{self.name} built a house on {property_name}.")
+                    if PRINT_FLAG:
+                        print(f"{self.name} built a house on {property_name}.")
                     return True
         return False
     
@@ -320,8 +322,8 @@ class Player:
                 for property in self.properties:
                     if property.is_mortgaged:
                         self.unmortgage_property(property.name)
-
-                print("Checking if I can build a house.")
+                if PRINT_FLAG:
+                    print("Checking if I can build a house.")
                 # Check if there is a property that can be improved
                 for property in self.properties:
                     if self.can_build_house(property.name):

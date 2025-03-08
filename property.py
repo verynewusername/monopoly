@@ -1,5 +1,5 @@
 from player import Player
-from constants import PROPERTY_DATA, COLOR_GROUPS
+from constants import PROPERTY_DATA, COLOR_GROUPS, PRINT_FLAG
 
 class Property:
     def __init__(self, name):
@@ -38,7 +38,8 @@ class Property:
         else:
             self.is_mortgaged = True
             player.add_money(self.mortgage_value)
-            print(f"{player.name} mortgaged {self.name} for ${self.mortgage_value}.")
+            if PRINT_FLAG:
+                print(f"{player.name} mortgaged {self.name} for ${self.mortgage_value}.")
 
     def unmortgage(self, player: Player):
         if not self.is_mortgaged:
@@ -46,7 +47,8 @@ class Property:
         else:
             self.is_mortgaged = False
             player.deduct_money(self.mortgage_value)
-            print(f"{player.name} unmortgaged {self.name} for ${self.mortgage_value}.")
+            if PRINT_FLAG:
+                print(f"{player.name} unmortgaged {self.name} for ${self.mortgage_value}.")
 
     def get_house_building_price(self):
         # Get idx of the property in the list of properties

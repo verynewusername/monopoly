@@ -1,5 +1,8 @@
 
 # Constants
+PRINT_FLAG = False
+
+
 START_MONEY = 1950
 NUM_SQUARES = 40
 JAIL_POSITION = 10
@@ -12,8 +15,8 @@ EXTRA_GO_MONEY = 200
 GO_MONEY = 200
 
 # # ! DEBUGING PURPOSES 20 
-# EXTRA_GO_MONEY = 200
-# GO_MONEY = 200
+# EXTRA_GO_MONEY = 0
+# GO_MONEY = 0
 # # ! DEBUGING PURPOSES 20 END
 
 PROPERTY_NAMES = [
@@ -119,10 +122,10 @@ COMMUNITY_CHEST_CARDS = [
     {"text": "From sale of stock you get $50.", "action": lambda self, player: player.add_money(50)},
     {"text": "Get Out of Jail Free", "action": lambda self, player: player.get_get_out_of_jail_card()},
     {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda self, player: player.go_to_jail()},
-    {"text": "Grand Opera Night. Collect $50 from every player for opening night seats.", "action": lambda self, player: player.collect_from_all_players(player, 50)},
+    {"text": "Grand Opera Night. Collect $50 from every player for opening night seats.", "action": lambda self, player: self.collect_from_all_players(player, 50)},
     {"text": "Holiday Fund matures. Receive $100.", "action": lambda self, player: player.add_money(100)},
     {"text": "Income tax refund. Collect $20.", "action": lambda self, player: player.add_money(20)},
-    {"text": "It is your birthday. Collect $10 from every player.", "action": lambda self, player: player.collect_from_all_players( player, 10)},
+    {"text": "It is your birthday. Collect $10 from every player.", "action": lambda self, player: self.collect_from_all_players( player, 10)},
     {"text": "Life insurance matures. Collect $100.", "action": lambda self, player: player.add_money(100)},
     {"text": "Pay hospital fees of $100.", "action": lambda self, player: player.deduct_money(100)},
     {"text": "Pay school fees of $150.", "action": lambda self, player: player.deduct_money(150)},
