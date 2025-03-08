@@ -1,3 +1,7 @@
+# FILE: constants.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the constants used in the Monopoly game.
 
 # Constants
 
@@ -149,3 +153,6 @@ MONOPOLY_PIECES = [
 
 # DEFAULT LOGIC CONSTANTS
 SAFE_KEEP_MONEY_THRESHOLD = 300
+
+
+# END OF FILE - constants.py

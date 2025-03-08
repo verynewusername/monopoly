@@ -1,3 +1,8 @@
+# FILE: main.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the main function to run the Monopoly game.
+
 from analyzer import MonopolyAnalyzer
 from monopoly import Game
 import sys
@@ -76,3 +81,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# END OF FILE - main.py

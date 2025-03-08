@@ -1,3 +1,7 @@
+# FILE: monopoly.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the Game class which represents a Monopoly game.
 from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, EXTRA_GO_MONEY, GO_MONEY
 from player import Player
 from bank import Bank
@@ -459,3 +463,5 @@ class Game:
                 print(f"{active_players[0].name} wins the game!")
             return active_players[0]
         return None
+    
+# END OF FILE - monopoly.py

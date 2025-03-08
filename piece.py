@@ -1,3 +1,7 @@
+# FILE: piece.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the Piece class which represents a piece in the game.
 
 class Piece:
     # Class variable to keep track of existing pieces by name
@@ -27,3 +31,5 @@ class Piece:
     def reset(cls):
         """Deletes all stored instances and allows recreation."""
         cls._instances.clear()
+
+# END OF FILE - piece.py

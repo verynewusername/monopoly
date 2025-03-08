@@ -1,3 +1,8 @@
+# FILE: analyzer.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the MonopolyAnalyzer class which analyzes the game results.
+
 from monopoly import Game
 import matplotlib.pyplot as plt
 import numpy as np
@@ -158,3 +163,5 @@ class MonopolyAnalyzer:
         plt.tight_layout()
         plt.savefig("win_percentages.png")
         plt.show()
+
+# END OF FILE - analyzer.py

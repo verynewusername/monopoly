@@ -1,3 +1,8 @@
+# FILE: property.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the Property class which represents a property in the game.
+
 from player import Player
 from constants import PROPERTY_DATA, COLOR_GROUPS
 
@@ -85,3 +90,5 @@ class Property:
         print(f"\tMortgaged: {self.is_mortgaged}")
         print(f"\tHouses: {self.houses}")
         print(f"\tColor: {self.color}")
+
+# END OF FILE - property.py

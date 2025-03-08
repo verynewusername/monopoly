@@ -1,3 +1,8 @@
+# FILE: bank.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the Bank class which represents the bank in the Monopoly game.
+
 import random 
 from constants import CHANCE_CARDS, COMMUNITY_CHEST_CARDS, PROPERTY_NAMES
 from property import Property
@@ -82,3 +87,5 @@ class Bank:
         for property in self.unowned_properties:
             print(f"\tUnowned property: {property.print_information()}")
         print()
+
+# END OF FILE - bank.py

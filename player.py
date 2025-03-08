@@ -1,3 +1,8 @@
+# FILE: player.py
+# Date: 2025-03-08
+# Author: Efe Gorkem Sirin
+# Description: This file contains the Player class which represents a player in the game.
+
 from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD
 from piece import Piece
 import copy
@@ -371,3 +376,5 @@ class Player:
         print(f"Properties:")
         for property in self.properties:
             print(f"\t{property.print_information()}")
+
+# END OF FILE - player.py
