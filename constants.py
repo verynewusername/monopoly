@@ -8,13 +8,13 @@ CHANCE_POSITIONS = [7, 22, 36]
 COMMUNITY_CHEST_POSITIONS = [2, 17, 33]
 TAX_POSITIONS = [4, 38] # Income Tax 200, Super Tax 100
 
+EXTRA_GO_MONEY = 200
+GO_MONEY = 200
+
+# # ! DEBUGING PURPOSES 20 
 # EXTRA_GO_MONEY = 200
 # GO_MONEY = 200
-
-# ! DEBUGING PURPOSES 20 
-EXTRA_GO_MONEY = 200
-GO_MONEY = 0
-# ! DEBUGING PURPOSES 20 END
+# # ! DEBUGING PURPOSES 20 END
 
 PROPERTY_NAMES = [
     "Old Kent Road", "Whitechapel Road", "Kings Cross Station", "The Angel Islington", "Euston Road",

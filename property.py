@@ -50,7 +50,8 @@ class Property:
 
     def get_house_building_price(self):
         # Get idx of the property in the list of properties
-        idx = PROPERTY_DATA.keys().index(self.name)
+        keys = list(PROPERTY_DATA.keys())  # Convert dict_keys to a list
+        idx = keys.index(self.name)        # Now .index() works
         # Get the price of the property
         '''
         first 10 - house adding price 50

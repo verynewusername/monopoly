@@ -2,6 +2,7 @@ from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION
 from player import Player
 from bank import Bank
 import random
+import sys
 
 # Set Seed
 # random.seed(SEED)
@@ -276,18 +277,20 @@ class Game:
 
 def main():
     try:
-        # game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"], ["Can", "Car"]])
+        game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"], ["Can", "Car"]])
         # game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"]])
         # game = Game([["Efe", "Hat"], ["Oza", "Dog"]])
 
 
-        game = Game([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]])
+        # game = Game([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]])
         game.play_game()
     except KeyboardInterrupt:
         game.handle_exit(None, None)
+        raise
     except Exception as e:
         print(e)
         game.handle_exit(None, None)
+        raise
 
 if __name__ == "__main__":
     main()

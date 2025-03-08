@@ -15,7 +15,7 @@ class Player:
         self.get_out_of_jail_free = 0
         self.type = "BOT"
 
-    def __init__(self, name, pieceName, logic):
+    def __init__(self, name, pieceName, logic="DEFAULT"):
         self.name = name
         self.piece = Piece(pieceName)
         self.money = START_MONEY
@@ -87,12 +87,10 @@ class Player:
         raise ValueError(f"{self.name} does not own {property_name}.")
     
     def check_if_all_properties_of_color_group_are_owned(self, color_group):
-        for color, properties in COLOR_GROUPS.items():
-            if color == color_group:
-                for property in properties:
-                    if property not in self.properties:
-                        return False
-        return True
+        if color_group not in COLOR_GROUPS:
+            return False
+        owned_property_names = {p.name for p in self.properties}
+        return set(COLOR_GROUPS[color_group]).issubset(owned_property_names)
 
 
     def calculate_rent(self, property_name, dice_roll):
@@ -211,7 +209,7 @@ class Player:
             for property in self.properties:
                 if property.name == property_name:
                     self.deduct_money(price)
-                    property.build_a_house(self)
+                    property.build_a_house()
                     print(f"{self.name} built a house on {property_name}.")
                     return True
         return False
@@ -220,7 +218,7 @@ class Player:
         money_back = self.get_house_price_for_property(property_name) // 2
         for property in self.properties:
             if property.name == property_name:
-                property.remove_a_house(self)
+                property.remove_a_house()
                 self.add_money(money_back)
                 return True
         return False
@@ -250,13 +248,24 @@ class Player:
         return False
     
     def can_build_house(self, property_name) -> bool:
+        # Get the color of the propery
+        color_group = self.get_color_of_property(property_name)
+        if color_group == "Stations":
+            return False
+        elif color_group == "Utilities":
+            return False
+        # Check if the player owns all the properties of the color group
+        if not self.check_if_all_properties_of_color_group_are_owned(color_group):
+            return False
         for property in self.properties:
             if property.name == property_name:
-                color = self.get_color_of_property(property_name)
-                if self.check_if_all_properties_of_color_group_are_owned(color):
-                    print(f"{self.name} can build a house on {property_name}.")
+                if property.houses < 5:
+                    # print(f"{self.name} canbuild a house on {property_name}.")
                     return True
+                # else:
+                    # print(f"{self.name} cannot build a house on {property_name}. because there are already 5 houses.")
         return False
+
 
     def before_turn_decision(self):
         # DECIDE if you want to get out of jail
@@ -283,11 +292,16 @@ class Player:
 
         if self.logic == "DEFAULT":
             if self.money >= SAFE_KEEP_MONEY_THRESHOLD:
+                print("Checking if I can build a house.")
                 # Check if there is a property that can be improved
                 for property in self.properties:
                     if self.can_build_house(property.name):
                         self.build_a_house(property.name)
                         break
+                    # else:
+                        # print(f"{self.name} cannot build a house on {property.name}.")
+                        # print number of properties
+                        # print(f"{self.name} has {len(self.properties)} properties.")
         elif self.logic == "NOSPEND":
             pass
 
