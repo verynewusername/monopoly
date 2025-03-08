@@ -1,8 +1,8 @@
 from player import Player
-from constants import PROPERTY_DATA, COLOR_GROUPS, PRINT_FLAG
+from constants import PROPERTY_DATA, COLOR_GROUPS
 
 class Property:
-    def __init__(self, name):
+    def __init__(self, name, print_flag=False):
         self.name = name
         self.price = PROPERTY_DATA[name]["price"]
         self.rents = PROPERTY_DATA[name]["rent"]
@@ -10,6 +10,7 @@ class Property:
         self.is_mortgaged = False
         self.houses = 0
         self.color = self.get_color_group()
+        self.print_flag = print_flag
 
     def get_color_group(self):
         for color, properties in COLOR_GROUPS.items():
@@ -38,7 +39,7 @@ class Property:
         else:
             self.is_mortgaged = True
             player.add_money(self.mortgage_value)
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} mortgaged {self.name} for ${self.mortgage_value}.")
 
     def unmortgage(self, player: Player):
@@ -47,7 +48,7 @@ class Property:
         else:
             self.is_mortgaged = False
             player.deduct_money(self.mortgage_value)
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} unmortgaged {self.name} for ${self.mortgage_value}.")
 
     def get_house_building_price(self):

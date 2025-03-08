@@ -1,7 +1,5 @@
 
 # Constants
-PRINT_FLAG = False
-
 
 START_MONEY = 1950
 NUM_SQUARES = 40

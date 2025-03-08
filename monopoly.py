@@ -1,20 +1,37 @@
-from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED, EXTRA_GO_MONEY, GO_MONEY, PRINT_FLAG
+from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED, EXTRA_GO_MONEY, GO_MONEY
 from player import Player
 from bank import Bank
 import random
-import sys
 
 # Set Seed
 # random.seed(SEED)
 
 class Game:
-    def __init__(self, players):
-        self.players = [Player(*player) for player in players]
+
+    def __init__(self):
+        self.players = None
+        self.bank = None
+        self.current_player_index = 0
+        self.dice1 = 0
+        self.dice2 = 0
+        self.double_count = 0
+        self.print_flag = False
+
+        self.initComplete = False
+
+    def load_players_npl(self, players, print_flag=False, analysis_flag=False):
+        self.players = [Player(name, piece, logic, False) for name, piece, logic in players]
         self.bank = Bank()
         self.current_player_index = 0
         self.dice1 = 0
         self.dice2 = 0
         self.double_count = 0
+        self.print_flag = print_flag
+
+        self.initComplete = True
+
+    def load_from_json(self, game_data):
+        print(game_data)
 
     def handle_exit(self, signum, frame):
         print("Exiting the game.")
@@ -48,18 +65,18 @@ class Game:
 
         if player.in_jail:
             if player.jail_turns >= 3:
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} is released from jail.")
                 player.release_from_jail()
                 # CONTINUE THE TURN
             else:
                 if self.dice1 == self.dice2:
-                    if PRINT_FLAG:
+                    if self.print_flag:
                         print(f"{player.name} rolled doubles and is released from jail!")
                     player.release_from_jail()
                     # CONTINUE THE TURN
                 else:
-                    if PRINT_FLAG:
+                    if self.print_flag:
                         print(f"{player.name} remains in jail.")
                     player.increment_jail_turns()
                     self.set_next_player()
@@ -69,7 +86,7 @@ class Game:
             self.double_count += 1
                 
         if self.double_count == 3:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} rolled doubles 3 times in a row and goes to jail!")
             player.go_to_jail()
             self.set_next_player()
@@ -83,18 +100,18 @@ class Game:
         
     def handle_jail(self, player):
         if player.jail_turns >= 3:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} is released from jail.")
             player.in_jail = False
             player.jail_turns = 0
         else:
             dice1, dice2 = self.roll_dice()
             if dice1 == dice2:
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} rolled doubles and is released from jail!")
                 player.in_jail = False
             else:
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} remains in jail.")
                 player.jail_turns += 1
 
@@ -103,18 +120,18 @@ class Game:
         # Check if the player passed go
         if position < self.dice1 + self.dice2:
             player.add_money(GO_MONEY)
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} passed GO and collected $200!")
 
         if position in CHANCE_POSITIONS:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} landed on a Chance space.")
             card = self.bank.get_a_chance_card(player)
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} picked a Chance card: {card['text']}")
             card["action"](self, player)
             if player.is_bankrupt():
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} is bankrupt to the bank!")
                 if player.money > 0:
                     self.bank.collected_taxes(player.money)
@@ -126,14 +143,14 @@ class Game:
             else:
                 self.handle_landing(player) # Check if the player landed on another special space
         elif position in COMMUNITY_CHEST_POSITIONS:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} landed on a Community Chest space.")
             card = self.bank.get_a_community_chest_card(player)
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} picked a Community Chest card: {card['text']}")
             card["action"](self, player)
             if player.is_bankrupt():
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} is bankrupt to the bank!")
                 if player.money > 0:
                     self.bank.collected_taxes(player.money)
@@ -145,21 +162,21 @@ class Game:
             else:
                 self.handle_landing(player) # Check if the player landed on another special space
         elif position == JAIL_POSITION:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} is just visiting jail.")
         elif position == GO_POSITION:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} landed on GO.")
             player.add_money(EXTRA_GO_MONEY)
         elif position in TAX_POSITIONS:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} landed on a Tax space.")
             if position == 4:
                 self.rent_buy_transaction(self.bank, player, 200)
             elif position == 38:
                 self.rent_buy_transaction(self.bank, player, 100)
         elif position == 30:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} landed on Go to Jail space.")
             player.go_to_jail()
         else:
@@ -187,10 +204,10 @@ class Game:
             if player.wants_to_buy_property(property_name, self.bank.get_property_price(property_name)):
                 player.deduct_money(self.bank.get_property_price(property_name))
                 player.properties.append(self.bank.take_property(property_name))
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} bought {property_name} for ${self.bank.get_property_price(property_name)}.")
         else:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} already owns {property_name}.")
             # Pay ten times the thrown amount
             self.rent_buy_transaction(property_owner, player, self.dice1 + self.dice2 * 10)
@@ -199,7 +216,7 @@ class Game:
         player.deduct_money(rent)
         if player.is_bankrupt():
             if owner.type == "BANK":
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} is bankrupt to the bank!")
                 if player.money > 0:
                     self.bank.collected_taxes(player.money)
@@ -209,7 +226,7 @@ class Game:
                 for property in properties:
                     self.bank.unowned_properties.append(property)
             else:
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} is bankrupt to {owner.name}!")
                 player.money = 0
                 # Give properties to the bank
@@ -219,11 +236,11 @@ class Game:
         else:
             if owner.type == "BANK":
                 self.bank.collected_taxes(rent)
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} paid ${rent} to the bank.")
             else:
                 owner.add_money(rent)
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} paid ${rent} to {owner.name}.")
 
     def player_advances_to_nearest_railroad(self, player):
@@ -246,7 +263,7 @@ class Game:
                 player.properties.append(self.bank.take_property(property_name))
                 print(f"{player.name} bought {property_name} for ${self.bank.get_property_price(property_name)}.")
         else:
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} already owns {property_name}.")
             # Pay ten times the thrown amount
             self.rent_buy_transaction(property_owner, player, self.dice1 + self.dice2 * 10)
@@ -260,28 +277,28 @@ class Game:
         # Check if the property is owned by another player
         # check if bank has the property
         property_name = PROPERTY_NAMES[position % len(PROPERTY_NAMES)]
-        if PRINT_FLAG:
+        if self.print_flag:
             print(f"{player.name} landed on {property_name}.")
 
         if self.bank.has_the_property(property_name):
             property_price = self.bank.get_property_price(property_name)
             if player.wants_to_buy_property(property_name, property_price):
                 if player.get_money() < property_price:
-                    if PRINT_FLAG:
+                    if self.print_flag:
                         print(f"{player.name} does not have enough money to buy {property_name}.")
                 else:
                     player.deduct_money(property_price)
                     player.properties.append(self.bank.take_property(property_name))
-                    if PRINT_FLAG:
+                    if self.print_flag:
                         print(f"{player.name} bought {property_name} for ${property_price}.")
         elif player.has_the_property(property_name):
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"{player.name} already owns {property_name}.")
         else:
             owner_of_property = self.get_owner_of_property(property_name)
             rent = owner_of_property.calculate_rent(property_name, self.dice1 + self.dice2)
             # print rent
-            if PRINT_FLAG:
+            if self.print_flag:
                 print(f"Rent for {property_name} is ${rent}.")
             player.deduct_money(rent)
             if player.is_bankrupt():
@@ -292,12 +309,12 @@ class Game:
                 properties = player.remove_all_properties()
                 for property in properties:
                     owner_of_property.properties.append(property)
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} went bankrupt to {owner_of_property.name}.")
                 
             else:
                 owner_of_property.add_money(rent)
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{player.name} paid ${rent} to {owner_of_property.name}.")
             
     def get_owner_of_property(self, property_name):
@@ -309,37 +326,21 @@ class Game:
         return self.bank
                     
     def play_game(self):
+        if not self.initComplete:
+            print("Game not initialized")
+            return
         while(True):
             active_players = [player for player in self.players if not player.bankrupt]
             # print the number of active players
-            # if PRINT_FLAG:
-            print(f"Number of active players: {len(active_players)}")
-            self.print_money_of_players()
+            if self.print_flag:
+                print(f"Number of active players: {len(active_players)}")
+                self.print_money_of_players()
             if len(active_players) == 1:
-                if PRINT_FLAG:
-                    print(f"{active_players[0].name} wins the game!")
+                # if self.print_flag:
+                print(f"{active_players[0].name} wins the game!")
                 self.print_money_of_players()
                 break
             self.next_turn()
-            # if PRINT_FLAG:
-            print("-" * 40)
+            if self.print_flag:
+                print("-" * 40)
 
-def main():
-    try:
-        game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"], ["Can", "Car"]])
-        # game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"]])
-        # game = Game([["Efe", "Hat"], ["Oza", "Dog"]])
-
-
-        # game = Game([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]])
-        game.play_game()
-    except KeyboardInterrupt:
-        game.handle_exit(None, None)
-        raise
-    except Exception as e:
-        print(e)
-        game.handle_exit(None, None)
-        raise
-
-if __name__ == "__main__":
-    main()

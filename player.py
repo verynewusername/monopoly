@@ -1,9 +1,9 @@
-from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD, PRINT_FLAG
+from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD
 from piece import Piece
 import copy
 
 class Player:
-    def __init__(self, name, pieceName):
+    def __init__(self, name, pieceName, logic, print_flag):
         self.name = name
         self.piece = Piece(pieceName)
         self.money = START_MONEY
@@ -14,19 +14,9 @@ class Player:
         self.logic = "DEFAULT"
         self.get_out_of_jail_free = 0
         self.type = "BOT"
-
-    def __init__(self, name, pieceName, logic="DEFAULT"):
-        self.name = name
-        self.piece = Piece(pieceName)
-        self.money = START_MONEY
-        self.properties = []
-        self.in_jail = False
-        self.jail_turns = 0
-        self.bankrupt = False
-        self.logic = logic
-        self.type = "BOT"
+        self.print_flag = print_flag
         assert logic in ["DEFAULT", "NOSPEND", "TACTICAL"]
-        self.get_out_of_jail_free = 0
+        self.logic = logic
     
     def has_both_utilities(self) -> bool:
         return all(prop in self.properties for prop in [PROPERTY_NAMES[7], PROPERTY_NAMES[22]])
@@ -38,7 +28,7 @@ class Player:
                 assert self.money >= 0
                 return True
             else:
-                if PRINT_FLAG:
+                if self.print_flag:
                     print(f"{self.name} is bankrupt!")
                 self.bankrupt = True
                 return False
@@ -211,7 +201,7 @@ class Player:
                 if property.name == property_name:
                     self.deduct_money(price)
                     property.build_a_house()
-                    if PRINT_FLAG:
+                    if self.print_flag:
                         print(f"{self.name} built a house on {property_name}.")
                     return True
         return False
@@ -322,7 +312,7 @@ class Player:
                 for property in self.properties:
                     if property.is_mortgaged:
                         self.unmortgage_property(property.name)
-                if PRINT_FLAG:
+                if self.print_flag:
                     print("Checking if I can build a house.")
                 # Check if there is a property that can be improved
                 for property in self.properties:
