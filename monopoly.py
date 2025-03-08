@@ -3,12 +3,9 @@ from player import Player
 from bank import Bank
 import random
 
-# Set Seed
-# random.seed(SEED)
-
 class Game:
 
-    def __init__(self):
+    def __init__(self, seed=None):
         self.players = None
         self.bank = None
         self.current_player_index = 0
@@ -16,12 +13,13 @@ class Game:
         self.dice2 = 0
         self.double_count = 0
         self.print_flag = False
+        self.seed = seed
 
         self.initComplete = False
 
     def load_players_npl(self, players, print_flag=False, analysis_flag=False):
         self.players = [Player(name, piece, logic, False) for name, piece, logic in players]
-        self.bank = Bank()
+        self.bank = Bank(self.seed)
         self.current_player_index = 0
         self.dice1 = 0
         self.dice2 = 0
@@ -31,7 +29,42 @@ class Game:
         self.initComplete = True
 
     def load_from_json(self, game_data):
-        print(game_data)
+        if not self.validate_game_data(game_data):
+            return
+        # print(game_data)
+
+    def validate_game_data(self,game_data):
+        # Store the properties each player owns in a set to ensure uniqueness
+        owned_properties = set()
+        
+        # Iterate through players to check all conditions
+        for player in game_data["players"]:
+            # Check that the position is less than 40
+            if player["position"] >= 40:
+                if self.print_flag:
+                    print(f"Error: {player['name']} has an invalid position: {player['position']} (must be less than 40).")
+                return False
+            
+            # Check the properties for duplicates and that stations/utilities have no houses
+            for property in player["properties"]:
+                # Check that stations and utilities do not have houses
+                if "houses" in property and property["houses"] > 0:
+                    if property["name"] in ["Kings Cross Station", "Marylebone Station", "Fenchurch Street Station", "Liverpool Street Station", "Electric Company", "Water Works"]:
+                        if self.print_flag:
+                            print(f"Error: {property['name']} cannot have houses.")
+                        return False
+                
+                # Check that no two players have the same property
+                property_name = property["name"]
+                if property_name in owned_properties:
+                    if self.print_flag:
+                        print(f"Error: Property '{property_name}' is owned by more than one player.")
+                    return False
+                owned_properties.add(property_name)
+
+        print("All validations passed!")
+        return True
+
 
     def handle_exit(self, signum, frame):
         print("Exiting the game.")

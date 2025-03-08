@@ -3,12 +3,15 @@ from constants import CHANCE_CARDS, COMMUNITY_CHEST_CARDS, PROPERTY_NAMES
 from property import Property
 
 class Bank:
-    def __init__(self):
+    def __init__(self, seed=None):
         self.type = "BANK"
         self.tax_accumulated = 0
         self.unowned_properties = [Property(name) for name in PROPERTY_NAMES]
         self.chance_cards = CHANCE_CARDS.copy()
         self.community_chest_cards = COMMUNITY_CHEST_CARDS.copy()
+
+        if seed is not None:
+            random.seed(seed)
 
         random.shuffle(self.chance_cards)
         random.shuffle(self.community_chest_cards)

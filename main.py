@@ -9,6 +9,7 @@ def main():
         json_load = False
         json_name = None
         demo = False
+        seed = None
 
         args = sys.argv
         for i in range(1, len(args)):
@@ -19,12 +20,17 @@ def main():
                 print("  -d              run in demo mode")
                 print("  -p              print the game board")
                 print("  -a              print the analysis of the game")
+                print("  -s SEED         set the random seed for the game")
                 print("  -f JSON_FILE    load the game from a JSON file")
                 return
             elif args[i] == "-d":
                 demo = True
             elif args[i] == "-p":
                 print_flag = True
+            elif args[i] == "-s":
+                if i == len(args) - 1:
+                    raise ValueError("Please provide a seed number with the -s flag.")
+                seed = int(args[i+1])
             elif args[i] == "-a":
                 analysis_flag = True
             elif args[i] == "-f":
@@ -43,7 +49,7 @@ def main():
             with open(json_name, "r") as f:
                 game_data = json.load(f)
 
-        game = Game()
+        game = Game(seed)
 
         if demo:
             game.load_players_npl([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]], print_flag, analysis_flag)
