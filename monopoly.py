@@ -18,7 +18,11 @@ class Game:
         self.initComplete = False
 
     def load_players_npl(self, players, print_flag=False, analysis_flag=False):
-        self.players = [Player(name, piece, logic, False) for name, piece, logic in players]
+        self.players = []
+        for name, piece, logic in players:
+            player = Player()
+            player.basic_initialize(name, piece, logic, print_flag)
+            self.players.append(player)
         self.bank = Bank(self.seed)
         self.current_player_index = 0
         self.dice1 = 0
@@ -31,7 +35,65 @@ class Game:
     def load_from_json(self, game_data):
         if not self.validate_game_data(game_data):
             return
-        # print(game_data)
+        
+        self.bank = Bank(self.seed)  # Create the bank
+        all_properties = self.bank.get_property_deck()
+        # print(all_properties)
+        
+        self.players = []
+        for player_data in game_data["players"]:
+            # Remove the 'properties' key from player_data for loading
+            properties_data = player_data.pop("properties", [])
+            
+            player = Player(print_flag=self.print_flag)  # Create a new player
+            player.load_from_json(player_data)  # Pass the rest of player_data
+            player_properties = []
+            
+            for property_item in properties_data:
+                name_of_property = property_item["name"]
+                mortgage_status = property_item["mortgaged"]
+                houses = property_item.get("houses", 0)  
+                
+                # Find the matching property and update it
+                for property in all_properties:
+                    if property.name == name_of_property:
+                        # Assign the property and modify its attributes
+                        player_properties.append(property)
+                        property.houses = houses
+                        property.mortgaged = mortgage_status
+                        all_properties.remove(property)  # Remove it from all_properties
+                        break
+            
+            # Assign the properties to the player
+            player.properties = player_properties
+            self.players.append(player)
+
+
+        # Give remaining properties to the bank
+        for property in all_properties:
+            self.bank.unowned_properties.append(property)
+
+
+        # PRINT EVERY PLAYER EVERYTHING
+        # for player in self.players:
+        #     print(f"{player.name} has ${player.money}.")
+        #     print(f"{player.name} has the following properties:")
+        #     for property in player.properties:
+        #         print(f"  - {property.name}")
+        #     print()
+
+        # print("Bank has the following properties:")
+        # for property in self.bank.unowned_properties:
+        #     print(f"  - {property.name}")
+        # print()
+
+        # self.bank.print_information()
+
+        # for player in self.players:
+        #     player.print_information()
+
+        self.initComplete = True
+
 
     def validate_game_data(self,game_data):
         # Store the properties each player owns in a set to ensure uniqueness

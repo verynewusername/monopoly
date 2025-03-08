@@ -16,6 +16,11 @@ class Bank:
         random.shuffle(self.chance_cards)
         random.shuffle(self.community_chest_cards)
 
+        # print("Bank created.")
+        # print(f"Chance cards: {self.chance_cards}")
+        # print(f"Community chest cards: {self.community_chest_cards}")
+        # print(f"Unowned properties: {self.unowned_properties}")
+
     def collected_taxes(self, amount):
         self.tax_accumulated += amount
 
@@ -55,3 +60,19 @@ class Bank:
         # Return it
         return card
     
+    def get_property_deck(self):
+        properties = self.unowned_properties.copy()
+        self.unowned_properties = []
+        return properties
+    
+    def print_information(self):
+        print("Bank information:")
+        print(f"\tTax accumulated: {self.tax_accumulated}")
+        # for card in self.chance_cards:
+        #     print(f"Chance card: {card['text']}")
+        # for card in self.community_chest_cards:
+        #     print(f"Community chest card: {card['text']}")
+        print("\tUnowned properties:")
+        for property in self.unowned_properties:
+            print(f"\tUnowned property: {property.print_information()}")
+        print()

@@ -76,3 +76,12 @@ class Property:
 
     def remove_a_house(self):
         self.houses -= 1
+
+    def print_information(self):
+        print(f"Property: {self.name}")
+        print(f"\tPrice: {self.price}")
+        print(f"\tRents: {self.rents}")
+        print(f"\tMortgage value: {self.mortgage_value}")
+        print(f"\tMortgaged: {self.is_mortgaged}")
+        print(f"\tHouses: {self.houses}")
+        print(f"\tColor: {self.color}")

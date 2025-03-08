@@ -3,7 +3,21 @@ from piece import Piece
 import copy
 
 class Player:
-    def __init__(self, name, pieceName, logic, print_flag):
+
+    def __init__(self, print_flag=False):
+        self.name = None
+        self.piece = None
+        self.money = 0
+        self.properties = []
+        self.in_jail = False
+        self.jail_turns = 0
+        self.bankrupt = False
+        self.logic = None
+        self.get_out_of_jail_free = 0
+        self.type = "BOT"
+        self.print_flag = print_flag
+
+    def basic_initialize(self, name, pieceName, logic, print_flag):
         self.name = name
         self.piece = Piece(pieceName)
         self.money = START_MONEY
@@ -11,13 +25,23 @@ class Player:
         self.in_jail = False
         self.jail_turns = 0
         self.bankrupt = False
-        self.logic = "DEFAULT"
         self.get_out_of_jail_free = 0
         self.type = "BOT"
         self.print_flag = print_flag
         assert logic in ["DEFAULT", "NOSPEND", "TACTICAL"]
         self.logic = logic
     
+    def load_from_json(self, data):
+        self.name = data["name"]
+        self.piece = Piece(data["piece"])
+        self.money = data["money"]
+        self.in_jail = False
+        self.jail_turns = 0
+        self.bankrupt = False
+        self.get_out_of_jail_free = data["getOutOfJailCard"]
+        self.type = "BOT"
+        self.logic = data["logic"]
+
     def has_both_utilities(self) -> bool:
         return all(prop in self.properties for prop in [PROPERTY_NAMES[7], PROPERTY_NAMES[22]])
 
@@ -327,3 +351,13 @@ class Player:
             pass
         else:
             raise ValueError("Invalid logic type.")
+        
+    def print_information(self):
+        print(f"->Player: {self.name}")
+        print(f"\tMoney: {self.money}")
+        print(f"\tPosition: {self.get_position()}")
+        print(f"\tIn jail: {self.in_jail}")
+        print(f"\tGet out of jail free: {self.get_out_of_jail_free}")
+        print(f"Properties:")
+        for property in self.properties:
+            print(f"\t{property.print_information()}")

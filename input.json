@@ -1,0 +1,158 @@
+{
+    "players": [
+        {
+            "name": "Oza",
+            "piece": "Dog",
+            "position": 0,
+            "money": 300,
+            "properties": [
+                {
+                    "name": "The Angel Islington",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Euston Road",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Pentonville Road",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Whitehall",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Northumberland Avenue",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Coventry Street",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Piccadilly",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Regent Street",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Oxford Street",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Park Lane",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Mayfair",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Kings Cross Station",
+                    "mortgaged": false
+                },
+                {
+                    "name": "Marylebone Station",
+                    "mortgaged": false
+                },
+                {
+                    "name": "Fenchurch St Station",
+                    "mortgaged": false
+                },
+                {
+                    "name": "Liverpool Street Station",
+                    "mortgaged": false
+                },
+                {
+                    "name": "Electric Company",
+                    "mortgaged": false
+                },
+                {
+                    "name": "Water Works",
+                    "mortgaged": false
+                }
+            ],
+            "logic": "TACTICAL",
+            "getOutOfJailCard": 0
+        },
+        {
+            "name": "Efe",
+            "piece": "Hat",
+            "position": 0,
+            "money": 300,
+            "properties": [
+                {
+                    "name": "Old Kent Road",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Whitechapel Road",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Pall Mall",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Bow Street",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Marlborough Street",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Vine Street",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "The Strand",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Fleet Street",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Trafalgar Square",
+                    "mortgaged": false,
+                    "houses": 5
+                },
+                {
+                    "name": "Leicester Square",
+                    "mortgaged": false,
+                    "houses": 0
+                },
+                {
+                    "name": "Bond Street",
+                    "mortgaged": false,
+                    "houses": 0
+                }
+            ],
+            "logic": "TACTICAL",
+            "getOutOfJailCard": 0
+        }
+    ]
+}
