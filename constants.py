@@ -24,7 +24,6 @@ Fenchurch St Station
 Liverpool Street Station
 '''
 
-
 # Property Prices, Rents, and Mortgage Values
 PROPERTY_DATA = {
     "Old Kent Road": {"price": 60, "rent": [2, 10, 30, 90, 160, 250], "mortgage": 30},

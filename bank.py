@@ -21,7 +21,7 @@ class Bank:
     def reset_accumulated_tax(self):
         self.tax_accumulated = 0
 
-    def has_the_property(self, name):
+    def has_the_property(self, name) -> bool:
         return name in [property.name for property in self.unowned_properties]
     
     def get_property_price(self, name):
@@ -36,3 +36,6 @@ class Bank:
                 self.unowned_properties.remove(property)
                 return property
         raise ValueError(f"Property {name} not found in the bank.")
+
+    
+    

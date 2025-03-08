@@ -1,5 +1,6 @@
 from constants import START_MONEY, PROPERTY_NAMES, NUM_SQUARES
 from piece import Piece
+import copy
 
 class Player:
     def __init__(self, name, pieceName):
@@ -35,6 +36,8 @@ class Player:
         return False
     
     def get_money(self, amount):
+        if self.bankrupt:
+            raise ValueError(f"{self.name} is bankrupt and cannot receive money., amount: {amount}")
         self.money += amount
 
     def move(self, steps):
@@ -70,11 +73,23 @@ class Player:
         self.in_jail = True
         self.jail_turns = 0
 
+    def has_the_property(self, property_name) -> bool:
+        return property_name in [property.name for property in self.properties]
+
     def has_properties(self) -> bool:
+        if self.bankrupt:
+            return False
         return len(self.properties) > 0
 
     def remove_all_properties(self):
-        properties = self.properties
-        self.properties = []
+        properties = copy.deepcopy(self.properties)  # Creates a deep copy
+        self.properties.clear()
         return properties
+    
+    def increment_jail_turns(self):
+        self.jail_turns += 1
+    
+    def release_from_jail(self):
+        self.jail_turns = 0
+        self.in_jail = False
 
