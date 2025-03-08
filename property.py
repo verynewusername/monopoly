@@ -40,26 +40,27 @@ class Property:
             player.deduct_money(self.mortgage_value)
             print(f"{player.name} unmortgaged {self.name} for ${self.mortgage_value}.")
 
-    def build_house(self, player: Player):
-        # TODO: Implement this method
-        # get the price for a house
-        # if self.houses < 5:
-        #     player.deduct_money(self.price)
-        #     self.houses += 1
-        #     print(f"{player.name} built a house on {self.name} for ${self.price}.")
-        # else:
-        #     raise ValueError(f"{player.name} cannot build a house on {self.name}.")
-        pass
+    def get_house_building_price(self):
+        # Get idx of the property in the list of properties
+        idx = PROPERTY_DATA.keys().index(self.name)
+        # Get the price of the property
+        '''
+        first 10 - house adding price 50
+        second 10 - house adding price 100
+        third 10 - house adding price 150
+        fourth 10 - house adding price 200
+        '''
+        if idx < 10:
+            return 50
+        elif idx < 20:
+            return 100
+        elif idx < 30:
+            return 150
+        else:
+            return 200
 
-    def sell_house(self):
-        # TODO
-        pass
+    def build_a_house(self):
+        self.houses += 1
 
-    # def buy_property(self, player):
-    #     if self.owner is None and player.money >= self.price:
-    #         self.owner = player
-    #         player.money -= self.price
-    #         player.properties.append(self)
-    #         print(f"{player.name} bought {self.name}.")
-    #     else:
-    #         raise ValueError(f"{player.name} cannot buy {self.name}.")
+    def remove_a_house(self):
+        self.houses -= 1

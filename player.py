@@ -151,3 +151,52 @@ class Player:
 
     def get_money(self):
         return self.money
+    
+    def get_house_price_for_property(self, property_name):
+        for property in self.properties:
+            if property.name == property_name:
+                return property.get_house_building_price()
+        raise ValueError(f"{self.name} does not own {property_name}.")
+    
+    def build_a_house(self, property_name) -> bool:
+        price = self.get_house_price_for_property(property_name)
+        assert price is not None or price != 0
+        if self.money >= price:
+            for property in self.properties:
+                if property.name == property_name:
+                    property.build_a_house(self)
+                    return True
+        return False
+    
+    def sell_a_house(self, property_name) -> bool:
+        money_back = self.get_house_price_for_property(property_name) // 2
+        for property in self.properties:
+            if property.name == property_name:
+                property.remove_a_house(self)
+                self.add_money(money_back)
+                return True
+        return False
+    
+    def get_mortgage_value(self, property_name) -> int:
+        for property in self.properties:
+            if property.name == property_name:
+                return property.mortgage_value
+        raise ValueError(f"{self.name} does not own {property_name}.")
+    
+    def mortgage_property(self, property_name) -> bool:
+        mortgage_value = self.get_mortgage_value(property_name)
+        for property in self.properties:
+            if property.name == property_name:
+                if property.mortgage(self):
+                    self.add_money(mortgage_value)
+                    return True
+        return False
+
+    def unmortgage_property(self, property_name) -> bool:
+        mortgage_value = self.get_mortgage_value(property_name)
+        for property in self.properties:
+            if property.name == property_name:
+                if property.unmortgage(self):
+                    self.deduct_money(mortgage_value * 1.1) # 10% interest
+                    return True
+        return False

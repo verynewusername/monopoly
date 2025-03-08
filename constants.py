@@ -31,6 +31,14 @@ Kings Cross Station
 Marylebone Station
 Fenchurch St Station
 Liverpool Street Station
+
+------------------------------
+
+first 10 - house adding price 50
+second 10 - house adding price 100
+third 10 - house adding price 150
+fourth 10 - house adding price 200
+
 '''
 
 # Property Prices, Rents, and Mortgage Values
