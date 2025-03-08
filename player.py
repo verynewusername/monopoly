@@ -1,4 +1,4 @@
-from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, GO_MONEY, EXTRA_GO_MONEY
+from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, SAFE_KEEP_MONEY_THRESHOLD
 from piece import Piece
 import copy
 
@@ -14,6 +14,19 @@ class Player:
         self.logic = "DEFAULT"
         self.get_out_of_jail_free = 0
         self.type = "BOT"
+
+    def __init__(self, name, pieceName, logic):
+        self.name = name
+        self.piece = Piece(pieceName)
+        self.money = START_MONEY
+        self.properties = []
+        self.in_jail = False
+        self.jail_turns = 0
+        self.bankrupt = False
+        self.logic = logic
+        self.type = "BOT"
+        assert logic in ["DEFAULT", "NOSPEND"]
+        self.get_out_of_jail_free = 0
     
     def has_both_utilities(self) -> bool:
         return all(prop in self.properties for prop in [PROPERTY_NAMES[7], PROPERTY_NAMES[22]])
@@ -34,7 +47,22 @@ class Player:
         return self.bankrupt
     
     def handle_bankruptcy(self, needed_money) -> bool:
-        # TODO implement this method
+        # Mortgage properties untill you have money >= 0
+        for property in self.properties:
+            if property.is_mortgaged:
+                continue
+            # if there is a house on the property, sell it
+            if property.houses > 0:
+                for _ in range(property.houses):
+                    self.sell_a_house(property.name)
+                    if self.money >= 0:
+                        return True
+            
+            if property.houses == 0:
+                self.mortgage_property(property.name)
+                if self.money >= 0:
+                    return True
+        
         return False
     
     def add_money(self, amount):
@@ -83,6 +111,8 @@ class Player:
                 return True
             else:
                 return False
+        elif self.logic == "NOSPEND":
+            return False
         else:
             raise ValueError("Invalid logic type.")
 
@@ -180,7 +210,9 @@ class Player:
         if self.money >= price:
             for property in self.properties:
                 if property.name == property_name:
+                    self.deduct_money(price)
                     property.build_a_house(self)
+                    print(f"{self.name} built a house on {property_name}.")
                     return True
         return False
     
@@ -216,3 +248,48 @@ class Player:
                     self.deduct_money(mortgage_value * 1.1) # 10% interest
                     return True
         return False
+    
+    def can_build_house(self, property_name) -> bool:
+        for property in self.properties:
+            if property.name == property_name:
+                color = self.get_color_of_property(property_name)
+                if self.check_if_all_properties_of_color_group_are_owned(color):
+                    print(f"{self.name} can build a house on {property_name}.")
+                    return True
+        return False
+
+    def before_turn_decision(self):
+        # DECIDE if you want to get out of jail
+        # Either 50$ or use get out of jail card
+        if not self.in_jail:
+            return
+
+        if self.logic == "DEFAULT":
+            if self.get_out_of_jail_free > 0:
+                self.get_out_of_jail_free -= 1
+                self.release_from_jail()
+            else:
+                if self.money >= 50:
+                    self.deduct_money(50)
+        elif self.logic == "NOSPEND":
+            if self.get_out_of_jail_free > 0:
+                self.get_out_of_jail_free -= 1
+                self.release_from_jail()
+        else:
+            raise ValueError("Invalid logic type.")
+
+    def after_turn_decision(self):
+        # DECIDE if you want to build houses or sell them
+
+        if self.logic == "DEFAULT":
+            if self.money >= SAFE_KEEP_MONEY_THRESHOLD:
+                # Check if there is a property that can be improved
+                for property in self.properties:
+                    if self.can_build_house(property.name):
+                        self.build_a_house(property.name)
+                        break
+        elif self.logic == "NOSPEND":
+            pass
+
+        else:
+            raise ValueError("Invalid logic type.")

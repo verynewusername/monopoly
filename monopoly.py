@@ -8,7 +8,7 @@ import random
 
 class Game:
     def __init__(self, players):
-        self.players = [Player(name, pieceName) for name, pieceName in players]
+        self.players = [Player(*player) for player in players]
         self.bank = Bank()
         self.current_player_index = 0
         self.dice1 = 0
@@ -37,6 +37,11 @@ class Game:
         if player.bankrupt:
             self.current_player_index = (self.current_player_index + 1) % len(self.players)
             return
+        
+
+        # BEFORE ROLLING DICE
+        # Player can - if in jail - pay $50 to get out of jail or use card
+        player.before_turn_decision() 
 
         self.dice1, self.dice2 = self.roll_dice()
 
@@ -127,6 +132,10 @@ class Game:
             player.go_to_jail()
         else:
             self.landed_on_property(player, position)
+
+        if not player.is_bankrupt():
+            # AFTER Turn actions
+            player.after_turn_decision() 
 
     def player_advances_to_nearest_utility(self, player: Player):
         '''
@@ -267,9 +276,12 @@ class Game:
 
 def main():
     try:
-        game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"], ["Can", "Car"]])
+        # game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"], ["Can", "Car"]])
         # game = Game([["Efe", "Hat"], ["Oza", "Dog"], ["Sude", "Duck"]])
         # game = Game([["Efe", "Hat"], ["Oza", "Dog"]])
+
+
+        game = Game([["Efe", "Hat", "DEFAULT"], ["Oza", "Dog", "NOSPEND"], ["Sude", "Duck", "NOSPEND"], ["Can", "Car", "NOSPEND"]])
         game.play_game()
     except KeyboardInterrupt:
         game.handle_exit(None, None)
