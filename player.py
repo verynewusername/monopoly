@@ -1,4 +1,4 @@
-from constants import START_MONEY, PROPERTY_NAMES, NUM_SQUARES, GO_MONEY, EXTRA_GO_MONEY
+from constants import COLOR_GROUPS, START_MONEY, PROPERTY_NAMES, NUM_SQUARES, GO_MONEY, EXTRA_GO_MONEY
 from piece import Piece
 import copy
 
@@ -51,11 +51,27 @@ class Player:
             if property.name in ["Kings Cross Station", "Marylebone Station", "Fenchurch St Station", "Liverpool Street Station"]:
                 return self.properties.count(property)
         return 0
+    
+    def get_color_of_property(self, property_name):
+        for property in self.properties:
+            if property.name == property_name:
+                return property.color
+        raise ValueError(f"{self.name} does not own {property_name}.")
+    
+    def check_if_all_properties_of_color_group_are_owned(self, color_group):
+        for color, properties in COLOR_GROUPS.items():
+            if color == color_group:
+                for property in properties:
+                    if property not in self.properties:
+                        return False
+        return True
+
 
     def calculate_rent(self, property_name, dice_roll):
         for property in self.properties:
             if property.name == property_name:
-                return property.calculate_rent(dice_roll, self.has_both_utilities(), self.get_number_of_stations_owned())
+                has_all_same_color_properties = self.check_if_all_properties_of_color_group_are_owned(property.color)
+                return property.calculate_rent(dice_roll, self.has_both_utilities(), self.get_number_of_stations_owned(), has_all_same_color_properties)
         raise ValueError(f"{self.name} does not own {property_name}.")
 
     def get_position(self):

@@ -73,6 +73,22 @@ PROPERTY_DATA = {
     "Mayfair": {"price": 400, "rent": [50, 200, 600, 1400, 1700, 2000], "mortgage": 200}
 }
 
+COLOR_GROUPS = {
+    "Brown": ["Old Kent Road", "Whitechapel Road"],
+    "Light Blue": ["The Angel Islington", "Euston Road", "Pentonville Road"],
+    "Pink": ["Pall Mall", "Whitehall", "Northumberland Avenue"],
+    "Orange": ["Bow Street", "Marlborough Street", "Vine Street"],
+    "Red": ["The Strand", "Fleet Street", "Trafalgar Square"],
+    "Yellow": ["Leicester Square", "Coventry Street", "Piccadilly"],
+    "Green": ["Regent Street", "Oxford Street", "Bond Street"],
+    "Dark Blue": ["Park Lane", "Mayfair"],
+    "Stations": [
+        "Kings Cross Station", "Marylebone Station",
+        "Fenchurch St Station", "Liverpool Street Station"
+    ],
+    "Utilities": ["Electric Company", "Water Works"]
+}
+
 
 # Chance and Community Chest Cards
 CHANCE_CARDS = [

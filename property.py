@@ -1,5 +1,5 @@
 from player import Player
-from constants import PROPERTY_DATA
+from constants import PROPERTY_DATA, COLOR_GROUPS
 
 class Property:
     def __init__(self, name):
@@ -9,20 +9,28 @@ class Property:
         self.mortgage_value = PROPERTY_DATA[name]["mortgage"]
         self.is_mortgaged = False
         self.houses = 0
+        self.color = self.get_color_group()
 
-    def calculate_rent(self, dice_roll, has_both_utilities, number_of_stations_owned):
+    def get_color_group(self):
+        for color, properties in COLOR_GROUPS.items():
+            if self.name in properties:
+                return color
+        return None  # If the property is not found in any color group
+    
+    def calculate_rent(self, dice_roll, has_both_utilities, number_of_stations_owned, has_all_same_color_properties):
         if self.is_mortgaged:
             return 0
-        elif self.name in ["Electric Company", "Water Works"]:
-            return 4 * dice_roll if has_both_utilities else 10 * dice_roll
         elif self.name in ["Kings Cross Station", "Marylebone Station", "Fenchurch St Station", "Liverpool Street Station"]:
             return 25 * number_of_stations_owned
-        elif self.houses == 0:
-            return self.rents[0]
-        elif 1 <= self.houses <= 5:
-            return self.rents[self.houses]
+        elif self.name in ["Electric Company", "Water Works"]:
+            return 4 * dice_roll if has_both_utilities else 10 * dice_roll
+        elif has_all_same_color_properties:
+            if self.houses == 0:
+                return self.rents[0] * 2
+            elif 1 <= self.houses <= 5:
+                return self.rents[self.houses]
         else:
-            raise ValueError("Invalid number of houses on property.")
+            return self.rents[0]
         
     def mortgage(self, player: Player):
         if self.is_mortgaged:
