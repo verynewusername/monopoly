@@ -29,7 +29,7 @@ class Property:
             raise ValueError(f"{self.name} is already mortgaged.")
         else:
             self.is_mortgaged = True
-            player.get_money(self.mortgage_value)
+            player.add_money(self.mortgage_value)
             print(f"{player.name} mortgaged {self.name} for ${self.mortgage_value}.")
 
     def unmortgage(self, player: Player):

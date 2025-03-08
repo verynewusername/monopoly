@@ -4,12 +4,13 @@ from property import Property
 
 class Bank:
     def __init__(self):
+        self.type = "BANK"
         self.tax_accumulated = 0
         self.unowned_properties = [Property(name) for name in PROPERTY_NAMES]
-        self.change_cards = CHANCE_CARDS.copy()
+        self.chance_cards = CHANCE_CARDS.copy()
         self.community_chest_cards = COMMUNITY_CHEST_CARDS.copy()
 
-        random.shuffle(self.change_cards)
+        random.shuffle(self.chance_cards)
         random.shuffle(self.community_chest_cards)
 
     def collected_taxes(self, amount):
@@ -37,5 +38,17 @@ class Bank:
                 return property
         raise ValueError(f"Property {name} not found in the bank.")
 
-    
+    def get_a_chance_card(self, player):
+        # Return the top card from the deck and put it at the bottom
+        card = self.chance_cards.pop(0)
+        self.chance_cards.append(card)
+        # Return it
+        return card
+
+    def get_a_community_chest_card(self, player):
+        # Return the top card from the deck and put it at the bottom
+        card = self.community_chest_cards.pop(0)
+        self.community_chest_cards.append(card)
+        # Return it
+        return card
     

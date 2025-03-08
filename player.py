@@ -1,4 +1,4 @@
-from constants import START_MONEY, PROPERTY_NAMES, NUM_SQUARES
+from constants import START_MONEY, PROPERTY_NAMES, NUM_SQUARES, GO_MONEY, EXTRA_GO_MONEY
 from piece import Piece
 import copy
 
@@ -12,6 +12,8 @@ class Player:
         self.jail_turns = 0
         self.bankrupt = False
         self.logic = "DEFAULT"
+        self.get_out_of_jail_free = 0
+        self.type = "BOT"
     
     def has_both_utilities(self) -> bool:
         return all(prop in self.properties for prop in [PROPERTY_NAMES[7], PROPERTY_NAMES[22]])
@@ -35,7 +37,7 @@ class Player:
         # TODO implement this method
         return False
     
-    def get_money(self, amount):
+    def add_money(self, amount):
         if self.bankrupt:
             raise ValueError(f"{self.name} is bankrupt and cannot receive money., amount: {amount}")
         self.money += amount
@@ -93,3 +95,59 @@ class Player:
         self.jail_turns = 0
         self.in_jail = False
 
+    def chance_move_to(self, position, extra_money=0):
+        self.move(position - self.get_position())
+        self.add_money(extra_money)
+
+    def get_get_out_of_jail_card(self):
+        self.get_out_of_jail_free += 1
+
+    def use_get_out_of_jail_card(self):
+        if self.get_out_of_jail_free > 0:
+            self.get_out_of_jail_free -= 1
+            self.release_from_jail()
+            return True
+        return False
+    
+    def move_back(self, steps):
+        self.move(-steps)
+
+    def chance_pay_repairs(self):
+        for property in self.properties:
+            if property.houses == 5:
+                self.deduct_money(100)
+            elif property.houses > 0 and property.houses < 5:
+                self.deduct_money(25 * property.houses)
+        return True
+    
+    def community_chest_pay_repairs(self):
+        for property in self.properties:
+            if property.houses == 5:
+                self.deduct_money(115)
+            elif property.houses > 0 and property.houses < 5:
+                self.deduct_money(40 * property.houses)
+        return True
+    
+    def get_to_nearest_utility(self):
+        # Utilities are at positions 12 and 28
+        if self.get_position() < 12 or self.get_position() > 28:
+            self.move(12 - self.get_position())
+        else:
+            self.move(28 - self.get_position())
+        return True
+    
+    def get_to_nearest_railroad(self):
+        # Railroads are at positions 5, 15, 25, 35
+        # go to the closest
+        if self.get_position() < 5 or self.get_position() > 35:
+            self.move(5 - self.get_position())
+        elif self.get_position() < 15:
+            self.move(15 - self.get_position())
+        elif self.get_position() < 25:
+            self.move(25 - self.get_position())
+        else:
+            self.move(35 - self.get_position())
+        return True
+
+    def get_money(self):
+        return self.money

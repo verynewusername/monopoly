@@ -1,4 +1,4 @@
-from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED
+from constants import CHANCE_POSITIONS, COMMUNITY_CHEST_POSITIONS, JAIL_POSITION, GO_POSITION, TAX_POSITIONS, PROPERTY_NAMES, SEED, EXTRA_GO_MONEY, GO_MONEY
 from player import Player
 from bank import Bank
 import random
@@ -89,12 +89,25 @@ class Game:
         position = player.get_position()
         # Check if the player passed go
         if position < self.dice1 + self.dice2:
-            player.get_money(10)                # ! CHECK HERE - temporarily 10 -> 200
+            player.add_money(GO_MONEY)
             print(f"{player.name} passed GO and collected $200!")
 
         if position in CHANCE_POSITIONS:
             print(f"{player.name} landed on a Chance space.")
-            # TODO: Implement Chance card logic
+            card = self.bank.get_a_chance_card(player)
+            print(f"{player.name} picked a Chance card: {card['text']}")
+            card["action"](self, player)
+            if player.is_bankrupt():
+                print(f"{player.name} is bankrupt to the bank!")
+                if player.money > 0:
+                    self.bank.collected_taxes(player.money)
+                player.money = 0
+                # Give properties to the bank
+                properties = player.remove_all_properties()
+                for property in properties:
+                    self.bank.unowned_properties.append(property)
+            else:
+                self.handle_landing(player) # Check if the player landed on another special space
         elif position in COMMUNITY_CHEST_POSITIONS:
             print(f"{player.name} landed on a Community Chest space.")
             # TODO Implement Community Chest logic here
@@ -102,81 +115,143 @@ class Game:
             print(f"{player.name} is just visiting jail.")
         elif position == GO_POSITION:
             print(f"{player.name} landed on GO.")
-            player.money += 0                   # ! CHECK HERE - temporarily 0 -> 200
+            player.add_money(EXTRA_GO_MONEY)
         elif position in TAX_POSITIONS:
             print(f"{player.name} landed on a Tax space.")
             if position == 4:
-                player.deduct_money(200)
-                if player.is_bankrupt():
-                    print(f"{player.name} is bankrupt to the bank!")
-                    if player.money > 0:
-                        self.bank.collected_taxes(player.money)
-                    player.money = 0
-                    # Give properties to the bank
-                    properties = player.remove_all_properties()
-                    for property in properties:
-                        self.bank.unowned_properties.append(property)
-                else:
-                    self.bank.collected_taxes(200)
+                self.rent_buy_transaction(self.bank, player, 200)
             elif position == 38:
-                player.deduct_money(100)
-                if player.is_bankrupt():
-                    print(f"{player.name} is bankrupt to the bank!")
-                    if player.money > 0:
-                        self.bank.collected_taxes(player.money)
-                    player.money = 0
-                    # Give properties to the bank
-                    properties = player.remove_all_properties()
-                    for property in properties:
-                        self.bank.unowned_properties.append(property)
-                else:
-                    self.bank.collected_taxes(100)
+                self.rent_buy_transaction(self.bank, player, 100)
         elif position == 30:
             print(f"{player.name} landed on Go to Jail space.")
             player.go_to_jail()
         else:
-            # Check if the property is owned by another player
-            # check if bank has the property
-            property_name = PROPERTY_NAMES[position % len(PROPERTY_NAMES)]
-            print(f"{player.name} landed on {property_name}.")
+            self.landed_on_property(player, position)
 
-            if self.bank.has_the_property(property_name):
-                property_price = self.bank.get_property_price(property_name)
-                if player.wants_to_buy_property(property_name, property_price):
+    def player_advances_to_nearest_utility(self, player: Player):
+        '''
+        Advance to nearest Utility. If unowned, you may buy it from the bank. If owned, 
+        throw dice and pay owner a total ten times amount thrown.
+        '''
+        before_position = player.get_position()
+        player.get_to_nearest_utility()
+        after_position = player.get_position()
+        if before_position > after_position:
+            player.add_money(GO_MONEY)
+
+        # Check if the property is owned by another player
+        property_name = PROPERTY_NAMES[after_position % len(PROPERTY_NAMES)]
+        property_owner = self.get_owner_of_property(property_name)
+        if property_owner is None:
+            if player.wants_to_buy_property(property_name, self.bank.get_property_price(property_name)):
+                player.deduct_money(self.bank.get_property_price(property_name))
+                player.properties.append(self.bank.take_property(property_name))
+                print(f"{player.name} bought {property_name} for ${self.bank.get_property_price(property_name)}.")
+        else:
+            print(f"{player.name} already owns {property_name}.")
+            # Pay ten times the thrown amount
+            self.rent_buy_transaction(property_owner, player, self.dice1 + self.dice2 * 10)
+    
+    def rent_buy_transaction(self, owner, player, rent):
+        player.deduct_money(rent)
+        if player.is_bankrupt():
+            if owner.type == "BANK":
+                print(f"{player.name} is bankrupt to the bank!")
+                if player.money > 0:
+                    self.bank.collected_taxes(player.money)
+                player.money = 0
+                # Give properties to the bank
+                properties = player.remove_all_properties()
+                for property in properties:
+                    self.bank.unowned_properties.append(property)
+            else:
+                print(f"{player.name} is bankrupt to {owner.name}!")
+                player.money = 0
+                # Give properties to the bank
+                properties = player.remove_all_properties()
+                for property in properties:
+                    owner.properties.append(property)
+        else:
+            if owner.type == "BANK":
+                self.bank.collected_taxes(rent)
+                print(f"{player.name} paid ${rent} to the bank.")
+            else:
+                owner.add_money(rent)
+                print(f"{player.name} paid ${rent} to {owner.name}.")
+
+    def player_advances_to_nearest_railroad(self, player):
+        '''
+        Advance to nearest Railroad. If unowned, you may buy it from the bank. If owned, 
+        pay owner rent equal to ten times amount thrown.
+        '''
+        before_position = player.get_position()
+        player.get_to_nearest_railroad()
+        after_position = player.get_position()
+        if before_position > after_position:
+            player.add_money(GO_MONEY)
+
+        # Check if the property is owned by another player
+        property_name = PROPERTY_NAMES[after_position % len(PROPERTY_NAMES)]
+        property_owner = self.get_owner_of_property(property_name)
+        if property_owner is None:
+            if player.wants_to_buy_property(property_name, self.bank.get_property_price(property_name)):
+                player.deduct_money(self.bank.get_property_price(property_name))
+                player.properties.append(self.bank.take_property(property_name))
+                print(f"{player.name} bought {property_name} for ${self.bank.get_property_price(property_name)}.")
+        else:
+            print(f"{player.name} already owns {property_name}.")
+            # Pay ten times the thrown amount
+            self.rent_buy_transaction(property_owner, player, self.dice1 + self.dice2 * 10)
+
+    def collect_from_all_players(self, player, amount):
+        for other_player in self.players:
+            if other_player != player:
+                self.rent_buy_transaction(player, other_player, amount)
+
+    def landed_on_property(self, player, position):
+        # Check if the property is owned by another player
+        # check if bank has the property
+        property_name = PROPERTY_NAMES[position % len(PROPERTY_NAMES)]
+        print(f"{player.name} landed on {property_name}.")
+
+        if self.bank.has_the_property(property_name):
+            property_price = self.bank.get_property_price(property_name)
+            if player.wants_to_buy_property(property_name, property_price):
+                if player.get_money() < property_price:
+                    print(f"{player.name} does not have enough money to buy {property_name}.")
+                else:
                     player.deduct_money(property_price)
                     player.properties.append(self.bank.take_property(property_name))
                     print(f"{player.name} bought {property_name} for ${property_price}.")
-            elif player.has_the_property(property_name):
-                print(f"{player.name} already owns {property_name}.")
-            else:
-                owner_of_property = self.get_owner_of_property(property_name)
-                rent = owner_of_property.calculate_rent(property_name, self.dice1 + self.dice2)
-                # print rent
-                print(f"Rent for {property_name} is ${rent}.")
-                player.deduct_money(rent)
-                if player.is_bankrupt():
-                    if player.money > 0:
-                        owner_of_property.get_money(player.money)
-                    player.money = 0
-                    # Give properties to the owner
-                    properties = player.remove_all_properties()
-                    for property in properties:
-                        owner_of_property.properties.append(property)
-                    print(f"{player.name} went bankrupt to {owner_of_property.name}.")
-                    
-                else:
-                    owner_of_property.get_money(rent)
-                    print(f"{player.name} paid ${rent} to {owner_of_property.name}.")
+        elif player.has_the_property(property_name):
+            print(f"{player.name} already owns {property_name}.")
+        else:
+            owner_of_property = self.get_owner_of_property(property_name)
+            rent = owner_of_property.calculate_rent(property_name, self.dice1 + self.dice2)
+            # print rent
+            print(f"Rent for {property_name} is ${rent}.")
+            player.deduct_money(rent)
+            if player.is_bankrupt():
+                if player.money > 0:
+                    owner_of_property.add_money(player.money)
+                player.money = 0
+                # Give properties to the owner
+                properties = player.remove_all_properties()
+                for property in properties:
+                    owner_of_property.properties.append(property)
+                print(f"{player.name} went bankrupt to {owner_of_property.name}.")
                 
-
+            else:
+                owner_of_property.add_money(rent)
+                print(f"{player.name} paid ${rent} to {owner_of_property.name}.")
+            
     def get_owner_of_property(self, property_name):
         for player in self.players:
             # Iterate through the player's properties and check if the property name matches
             for property in player.properties:
                 if property.name == property_name:
                     return player
-        raise ValueError(f"No player owns {property_name}.")
-
+        return self.bank
                     
     def play_game(self):
         while(True):

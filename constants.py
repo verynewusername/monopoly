@@ -7,6 +7,15 @@ GO_POSITION = 0
 CHANCE_POSITIONS = [7, 22, 36]
 COMMUNITY_CHEST_POSITIONS = [2, 17, 33]
 TAX_POSITIONS = [4, 38] # Income Tax 200, Super Tax 100
+
+# EXTRA_GO_MONEY = 200
+# GO_MONEY = 200
+
+# ! DEBUGING PURPOSES 20 
+EXTRA_GO_MONEY = 20
+GO_MONEY = 20
+# ! DEBUGING PURPOSES 20 END
+
 PROPERTY_NAMES = [
     "Old Kent Road", "Whitechapel Road", "Kings Cross Station", "The Angel Islington", "Euston Road",
     "Pentonville Road", "Pall Mall", "Electric Company", "Whitehall", "Northumberland Avenue",
@@ -59,44 +68,44 @@ PROPERTY_DATA = {
 
 # Chance and Community Chest Cards
 CHANCE_CARDS = [
-    {"text": "Advance to Go (Collect $200)", "action": lambda player: player.move_to(GO_POSITION, 200)},
-    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda player: player.go_to_jail()},
-    {"text": "Advance to Illinois Avenue", "action": lambda player: player.move_to(24)},
-    {"text": "Advance to St. Charles Place", "action": lambda player: player.move_to(11)},
-    {"text": "Advance to Boardwalk", "action": lambda player: player.move_to(39)},
-    {"text": "Bank pays you dividend of $50", "action": lambda player: player.receive_money(50)},
-    {"text": "Get Out of Jail Free", "action": lambda player: player.add_get_out_of_jail_card()},
-    {"text": "Go back 3 spaces", "action": lambda player: player.move_back(3)},
-    {"text": "Make general repairs on all your property. For each house pay $25. For each hotel pay $100.", "action": lambda player: player.pay_repairs()},
-    {"text": "Pay poor tax of $15", "action": lambda player: player.pay_money(15)},
-    {"text": "Take a trip to Reading Railroad. If you pass Go, collect $200.", "action": lambda player: player.move_to(5)},
-    {"text": "You have been elected chairman of the board. Pay each player $50.", "action": lambda player, game: player.pay_money(50 * (len(game.players) - 1))},
-    {"text": "Your building loan matures. Collect $150.", "action": lambda player: player.receive_money(150)},
-    {"text": "You have won a crossword competition. Collect $100.", "action": lambda player: player.receive_money(100)},
-    {"text": "Advance to nearest Utility. If unowned, you may buy it from the bank. If owned, throw dice and pay owner a total ten times amount thrown.", "action": lambda player: player.advance_to_nearest_utility()},
-    {"text": "Advance to nearest Railroad. If unowned, you may buy it from the bank. If owned, pay owner rent equal to ten times amount thrown.", "action": lambda player: player.advance_to_nearest_railroad()},
-    {"text": "Take a walk on the Boardwalk. Advance to Boardwalk.", "action": lambda player: player.move_to(39)}
+    {"text": "Advance to Go (Collect $200)", "action": lambda self, player: player.chance_move_to(GO_POSITION, 200)},
+    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda self, player: player.go_to_jail()},
+    {"text": "Advance to Illinois Avenue", "action": lambda self, player: player.chance_move_to(24)},
+    {"text": "Advance to St. Charles Place", "action": lambda self, player: player.chance_move_to(11)},
+    {"text": "Advance to Boardwalk", "action": lambda self, player: player.chance_move_to(39)},
+    {"text": "Bank pays you dividend of $50", "action": lambda self, player: player.add_money(50)},
+    {"text": "Get Out of Jail Free", "action": lambda self, player: player.get_get_out_of_jail_card()},
+    {"text": "Go back 3 spaces", "action": lambda self, player: player.move_back(3)},
+    {"text": "Make general repairs on all your property. For each house pay $25. For each hotel pay $100.", "action": lambda self, player: player.chance_pay_repairs()},
+    {"text": "Pay poor tax of $15", "action": lambda self, player: player.deduct_money(15)},
+    {"text": "Take a trip to Reading Railroad. If you pass Go, collect $200.", "action": lambda self, player: player.chance_move_to(5)},
+    {"text": "You have been elected chairman of the board. Pay each player $50.", "action": lambda self, player: player.deduct_money(50 * (len(self.players) - 1))},
+    {"text": "Your building loan matures. Collect $150.", "action": lambda self, player: player.add_money(150)},
+    {"text": "You have won a crossword competition. Collect $100.", "action": lambda self, player: player.add_money(100)},
+    {"text": "Advance to nearest Utility. If unowned, you may buy it from the bank. If owned, throw dice and pay owner a total ten times amount thrown.", "action": lambda self, player: self.player_advances_to_nearest_utility(player)},
+    {"text": "Advance to nearest Railroad. If unowned, you may buy it from the bank. If owned, pay owner rent equal to ten times amount thrown.", "action": lambda self, player: self.player_advances_to_nearest_railroad(player)},
+    {"text": "Take a walk on the Boardwalk. Advance to Boardwalk.", "action": lambda self, player: player.chance_move_to(39)}
 ]
 
 COMMUNITY_CHEST_CARDS = [
-    {"text": "Advance to Go (Collect $200)", "action": lambda player: player.move_to(GO_POSITION, 200)},
-    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda player: player.go_to_jail()},
-    {"text": "Bank error in your favor. Collect $200.", "action": lambda player: player.receive_money(200)},
-    {"text": "Doctor's fees. Pay $50.", "action": lambda player: player.pay_money(50)},
-    {"text": "From sale of stock you get $50.", "action": lambda player: player.receive_money(50)},
-    {"text": "Get Out of Jail Free", "action": lambda player: player.add_get_out_of_jail_card()},
-    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda player: player.go_to_jail()},
-    {"text": "Grand Opera Night. Collect $50 from every player for opening night seats.", "action": lambda player, game: player.collect_from_all_players(50)},
-    {"text": "Holiday Fund matures. Receive $100.", "action": lambda player: player.receive_money(100)},
-    {"text": "Income tax refund. Collect $20.", "action": lambda player: player.receive_money(20)},
-    {"text": "It is your birthday. Collect $10 from every player.", "action": lambda player, game: player.collect_from_all_players(10)},
-    {"text": "Life insurance matures. Collect $100.", "action": lambda player: player.receive_money(100)},
-    {"text": "Pay hospital fees of $100.", "action": lambda player: player.pay_money(100)},
-    {"text": "Pay school fees of $150.", "action": lambda player: player.pay_money(150)},
-    {"text": "Receive $25 consultancy fee.", "action": lambda player: player.receive_money(25)},
-    {"text": "You are assessed for street repairs: pay $40 per house and $115 per hotel you own.", "action": lambda player: player.pay_repairs()},
-    {"text": "You have won second prize in a beauty contest. Collect $10.", "action": lambda player: player.receive_money(10)},
-    {"text": "You inherit $100.", "action": lambda player: player.receive_money(100)}
+    {"text": "Advance to Go (Collect $200)", "action": lambda self, player: player.chance_move_to(GO_POSITION, 200)},
+    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda self, player: player.go_to_jail()},
+    {"text": "Bank error in your favor. Collect $200.", "action": lambda self, player: player.add_money(200)},
+    {"text": "Doctor's fees. Pay $50.", "action": lambda self, player: player.deduct_money(50)},
+    {"text": "From sale of stock you get $50.", "action": lambda self, player: player.add_money(50)},
+    {"text": "Get Out of Jail Free", "action": lambda self, player: player.get_get_out_of_jail_card()},
+    {"text": "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200.", "action": lambda self, player: player.go_to_jail()},
+    {"text": "Grand Opera Night. Collect $50 from every player for opening night seats.", "action": lambda self, player: player.collect_from_all_players(player, 50)},
+    {"text": "Holiday Fund matures. Receive $100.", "action": lambda self, player: player.add_money(100)},
+    {"text": "Income tax refund. Collect $20.", "action": lambda self, player: player.add_money(20)},
+    {"text": "It is your birthday. Collect $10 from every player.", "action": lambda self, player: player.collect_from_all_players( player, 10)},
+    {"text": "Life insurance matures. Collect $100.", "action": lambda self, player: player.add_money(100)},
+    {"text": "Pay hospital fees of $100.", "action": lambda self, player: player.deduct_money(100)},
+    {"text": "Pay school fees of $150.", "action": lambda self, player: player.deduct_money(150)},
+    {"text": "Receive $25 consultancy fee.", "action": lambda self, player: player.add_money(25)},
+    {"text": "You are assessed for street repairs: pay $40 per house and $115 per hotel you own.", "action": lambda self, player: player.community_chest_pay_repairs()},
+    {"text": "You have won second prize in a beauty contest. Collect $10.", "action": lambda self, player: player.add_money(10)},
+    {"text": "You inherit $100.", "action": lambda self, player: player.add_money(100)}
 ]
 
 MONOPOLY_PIECES = [
