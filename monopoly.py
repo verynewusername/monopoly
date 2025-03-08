@@ -136,7 +136,8 @@ class Game:
                     return False
                 owned_properties.add(property_name)
 
-        print("All validations passed!")
+        if self.print_flag:
+            print("All validations passed!")
         return True
 
 
@@ -454,6 +455,7 @@ class Game:
     def who_won(self) -> str | None:
         active_players = [player for player in self.players if not player.bankrupt]
         if len(active_players) == 1:
-            print(f"{active_players[0].name} wins the game!")
+            if self.print_flag:
+                print(f"{active_players[0].name} wins the game!")
             return active_players[0]
         return None
